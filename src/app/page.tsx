@@ -11,6 +11,11 @@ const sections = [
   { id: "faq", label: "FAQ" },
 ]
 
+const navLinks = [
+  ...sections,
+  { id: "demo", label: "Демо", href: "/demo" },
+]
+
 export default function Home() {
   const [openFaq, setOpenFaq] = useState<number | null>(null)
 
@@ -28,8 +33,8 @@ export default function Home() {
             <span>gisleads</span>
           </Link>
           <div className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground">
-            {sections.map((s) => (
-              <Link key={s.id} href={`#${s.id}`} className="hover:text-foreground transition-colors">
+            {navLinks.map((s) => (
+              <Link key={s.id} href={(s as any).href || `#${s.id}`} className="hover:text-foreground transition-colors">
                 {s.label}
               </Link>
             ))}
@@ -92,7 +97,7 @@ export default function Home() {
                 <div className="mt-10 flex flex-wrap items-center gap-8 text-sm text-muted-foreground">
                   <div className="flex items-center gap-2.5">
                     <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse-glow" />
-                    <span>Скрипт работает — <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">python leads.py --demo</code></span>
+                    <span>Скрипт работает — <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">python leads.py --mock</code></span>
                   </div>
                   <div className="flex items-center gap-2.5">
                     <svg className="h-4 w-4 text-amber-500" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -397,7 +402,14 @@ python leads.py "Шымкент" "stomatologiya"`}</code></pre>
                 <h2 id="demo-heading">Как выглядит скоринг</h2>
                 <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
                   Запустите <code className="bg-muted px-2 py-1 rounded font-mono text-sm">python leads.py --demo</code> — скрипт сам себя проверит на двух тестовых кейсах.
+                  А ещё можно сразу сгенерировать CSV без ключа: <code className="bg-muted px-2 py-1 rounded font-mono text-sm">--mock</code>.
                 </p>
+                <div className="mt-6">
+                  <Link href="/demo" className="btn-primary text-sm">
+                    Посмотреть живое демо
+                    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+                  </Link>
+                </div>
               </header>
             </Reveal>
             <div className="grid lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
@@ -489,7 +501,7 @@ python leads.py "Шымкент" "stomatologiya"`}</code></pre>
                 <span className="badge bg-emerald-500/10 text-emerald-500 border-emerald-500/20 mb-4">Быстрый старт</span>
                 <h2 id="quickstart-heading">Начните за 3 шага</h2>
                 <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-                  Всё, что нужно — Python 3.8+ и бесплатный ключ 2GIS.
+                  Всё, что нужно — Python 3.8+. Ключ 2GIS нужен только для реального поиска; без него работает демо-режим <code className="bg-muted px-2 py-1 rounded font-mono text-sm">--mock</code>.
                 </p>
               </header>
             </Reveal>
@@ -548,8 +560,8 @@ python leads.py "Шымкент" "stomatologiya"`}</code></pre>
             <Reveal delay={0.3}>
               <div className="mt-12 p-6 bg-muted/30 rounded-2xl border border-border text-center max-w-2xl mx-auto">
                 <p className="text-sm text-muted-foreground mb-1">Проверьте без API ключа:</p>
-                <code className="bg-muted px-3 py-1.5 rounded-lg font-mono text-sm">python leads.py --demo</code>
-                <p className="text-xs text-muted-foreground mt-2">Вывод: <code className="bg-muted px-1 py-0.5 rounded">demo OK: парсинг контактов и скоринг лидов работают</code></p>
+                <code className="bg-muted px-3 py-1.5 rounded-lg font-mono text-sm">python leads.py --mock</code>
+                <p className="text-xs text-muted-foreground mt-2">Сгенерирует CSV с 20 реалистичными демо-лидами. <Link href="/demo" className="text-accent hover:underline">Посмотреть результат →</Link></p>
               </div>
             </Reveal>
           </div>

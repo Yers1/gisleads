@@ -2,6 +2,7 @@ import argparse
 import csv
 import json
 import os
+import random
 import sys
 import time
 import urllib.error
@@ -164,6 +165,46 @@ def write_json(leads, path):
     return path
 
 
+def mock_leads(count=20, seed=42):
+    # ponytail: фиксированный seed для воспроизводимого демо без API
+    random.seed(seed)
+    names = [
+        "Салон Грация", "Барбершоп OldBoy", "Кофейня Doppio", "Пекарня Хлебница",
+        "СТО АвтоМастер", "Клининг CleanHouse", "Фотоателье Объектив", "Студия маникюра Nails",
+        "Цветочный магазин Лилия", "Ремонт обуви Скороход", "Аптека №1", "Кафе Берёзка",
+        "Фитнес-клуб Iron", "Магазин электроники Giga", "Сервисный центр FixIT",
+        "Туристическое агентство Вокруг света", "Ювелирная мастерская Золото", "Автошкола Прогресс",
+        "Стоматология Дента", "Риелтор Домашний", "Кондитерская Сладкая жизнь",
+    ]
+    streets = ["Абая", "Достык", "Сейфуллина", "Жибек Жолы", "Кабанбай батыра", "Ташкентская", "Манаса"]
+    sites = ["", "", "", "https://example.kz", "https://site.kz"]
+    messengers = ["", "", "whatsapp:+77001234567", "telegram:@shop", ""]
+    socials = ["instagram:account", "vkontakte:club", "", ""]
+
+    result = []
+    for i in range(min(count, len(names))):
+        site = random.choice(sites)
+        messenger = random.choice(messengers)
+        social = random.choice(socials)
+        has_site = bool(site)
+        has_messenger = bool(messenger)
+        score = (0 if has_site else 1) + (0 if has_messenger else 1)
+        result.append({
+            "name": names[i],
+            "address": f"{random.choice(streets)} {random.randint(1, 150)}",
+            "lon": round(76.8 + random.random() * 0.2, 6),
+            "lat": round(43.1 + random.random() * 0.2, 6),
+            "phones": f"+7 7{random.randint(100000000, 999999999)}",
+            "site": site,
+            "socials": "; ".join(filter(None, [messenger, social])),
+            "needs_site": "" if has_site else "да",
+            "needs_bot": "" if has_messenger else "да",
+            "score": score,
+        })
+    result.sort(key=lambda l: -l["score"])
+    return result
+
+
 def demo():
     no_digital = {
         "type": "branch", "org": {"id": "1"},
@@ -209,7 +250,8 @@ def main():
             "  python leads.py \"Алматы\" \"салон красоты\" --no-site --format json\n"
             "  python leads.py --point 76.9,43.2 --radius 2000 \"кофейня\" --key $GIS_KEY\n"
             "  python leads.py \"Алматы\" \"салон красоты\" --key $GIS_KEY --min-score 2\n"
-            "  python leads.py --demo"
+            "  python leads.py --demo\n"
+            "  python leads.py --mock --format json"
         ),
     )
     ap.add_argument("city", nargs="?", help="город, e.g. 'Алматы'")
@@ -226,6 +268,8 @@ def main():
     ap.add_argument("--min-score", type=int, default=0, help="минимальный score лидов (0-2)")
     ap.add_argument("--quiet", action="store_true", help="без stderr вывода")
     ap.add_argument("--demo", action="store_true", help="самопроверка без API")
+    ap.add_argument("--mock", action="store_true", help="сгенерировать демо-лиды без API")
+    ap.add_argument("--mock-count", type=int, default=20, help="количество mock-лидов (default: 20)")
 
     a = ap.parse_args()
 
@@ -233,8 +277,29 @@ def main():
         demo()
         return
 
+    if a.mock:
+        leads = mock_leads(count=a.mock_count)
+        out = a.out or f"leads.{a.format}"
+        if a.format == "csv":
+            write_csv(leads, out)
+        else:
+            write_json(leads, out)
+        if not a.quiet:
+            no_site = sum(1 for l in leads if l["needs_site"])
+            no_bot = sum(1 for l in leads if l["needs_bot"])
+            top = leads[0]
+            eprint(f"\n  {'='*40}")
+            eprint(f"  📄 {len(leads)} mock-лидов -> {out}")
+            eprint(f"  🏆 топ: {top['name']} (score {top['score']})")
+            eprint(f"  🌐 без сайта: {no_site}")
+            eprint(f"  💬 без бота: {no_bot}")
+            eprint(f"  {'='*40}")
+        else:
+            print(out)
+        return
+
     if not a.key:
-        ap.error("нужен --key или GIS_KEY (бесплатно: dev.2gis.com)")
+        ap.error("нужен --key или GIS_KEY (бесплатно: dev.2gis.com), или --mock/--demo")
 
     city_id, geo_point = None, None
 

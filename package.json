@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "prebuild": "python leads.py --mock --format json --out public/demo-leads.json --quiet",
     "start": "next start",
     "lint": "eslint"
   },

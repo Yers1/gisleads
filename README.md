@@ -8,14 +8,20 @@ CLI-утилита для поиска лидов в **2GIS**. Находит м
 
 ## Быстрый старт
 
-1. Получите бесплатный ключ API 2GIS: [dev.2gis.com](https://dev.2gis.com)
-2. Скачайте `leads.py` и запустите:
+Без ключа API — демо-режим:
+
+```bash
+curl -O https://raw.githubusercontent.com/Yers1/gisleads/main/leads.py
+python leads.py --mock
+```
+
+Результат — `leads.csv` с реалистичными демо-лидами.
+
+С ключом 2GIS ([dev.2gis.com](https://dev.2gis.com)):
 
 ```bash
 python leads.py "Алматы" "салон красоты" --key ВАШ_КЛЮЧ
 ```
-
-Результат — `leads.csv` в текущей папке.
 
 ---
 
@@ -47,6 +53,9 @@ python leads.py "Алматы" "салон красоты" --key $GIS_KEY --min-
 
 # Самопроверка без API
 python leads.py --demo
+
+# Генерация демо-лидов без ключа
+python leads.py --mock --format json
 ```
 
 ---
@@ -81,6 +90,8 @@ python leads.py --demo
 | `--min-score` | Минимальный score в выводе | 0 |
 | `--quiet` | Только результат, без логов | — |
 | `--demo` | Проверка без API | — |
+| `--mock` | Сгенерировать демо-лиды без API | — |
+| `--mock-count` | Количество mock-лидов | 20 |
 
 ---
 

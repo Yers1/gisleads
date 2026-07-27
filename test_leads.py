@@ -88,6 +88,18 @@ class TestDemo(unittest.TestCase):
         leads.demo()
 
 
+class TestMock(unittest.TestCase):
+    def test_mock_returns_sorted_leads(self):
+        result = leads.mock_leads(count=10)
+        self.assertEqual(len(result), 10)
+        # отсортированы по убыванию score
+        self.assertGreaterEqual(result[0]["score"], result[-1]["score"])
+        for l in result:
+            self.assertIn("name", l)
+            self.assertIn("score", l)
+            self.assertIn(l["score"], [0, 1, 2])
+
+
 class TestWrite(unittest.TestCase):
     def test_csv(self):
         import tempfile
