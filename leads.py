@@ -60,6 +60,7 @@ def collect(
     has_site=None,
     sort=None,
     city_id=None,
+    min_score=0,
 ):
     q_parts = [p for p in [city, rubric] if p]
     q = " ".join(q_parts).strip()
@@ -107,6 +108,7 @@ def collect(
         if p < pages:
             time.sleep(0.25)
 
+    leads = [l for l in leads if l["score"] >= min_score]
     leads.sort(key=lambda l: -l["score"])
     return leads
 
@@ -206,6 +208,7 @@ def main():
             "  python leads.py \"Алматы\" \"салон красоты\" --key $GIS_KEY\n"
             "  python leads.py \"Алматы\" \"салон красоты\" --no-site --format json\n"
             "  python leads.py --point 76.9,43.2 --radius 2000 \"кофейня\" --key $GIS_KEY\n"
+            "  python leads.py \"Алматы\" \"салон красоты\" --key $GIS_KEY --min-score 2\n"
             "  python leads.py --demo"
         ),
     )
@@ -220,6 +223,7 @@ def main():
     ap.add_argument("--has-site", action="store_true", default=None, dest="has_site", help="только с сайтом")
     ap.add_argument("--no-site", action="store_false", default=None, dest="has_site", help="только без сайта")
     ap.add_argument("--sort", choices=["relevance", "rating", "distance"], default=None, help="сортировка")
+    ap.add_argument("--min-score", type=int, default=0, help="минимальный score лидов (0-2)")
     ap.add_argument("--quiet", action="store_true", help="без stderr вывода")
     ap.add_argument("--demo", action="store_true", help="самопроверка без API")
 
@@ -261,6 +265,7 @@ def main():
         city=a.city, rubric=a.rubric, key=a.key, pages=a.pages,
         point=geo_point, radius=a.radius,
         has_site=a.has_site, sort=a.sort, city_id=city_id,
+        min_score=a.min_score,
     )
 
     if not leads:
