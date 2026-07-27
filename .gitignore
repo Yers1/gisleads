@@ -1,3 +1,27 @@
 __pycache__/
 *.csv
 Thumbs.db
+
+# Next.js
+.next/
+node_modules/
+out/
+
+# Environment
+.env
+.env.local
+.env.production.local
+.env.development.local
+
+# TypeScript
+next-env.d.ts
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+desktop.ini
