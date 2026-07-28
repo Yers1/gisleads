@@ -7,6 +7,9 @@ Thumbs.db
 node_modules/
 out/
 
+# Generated at build time
+public/demo-leads.json
+
 # Environment
 .env
 .env.local
